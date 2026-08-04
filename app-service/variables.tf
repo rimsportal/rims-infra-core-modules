@@ -16,9 +16,9 @@ variable "tags" {
 
 # Single object carrying the App Service configuration. Each environment
 # supplies this object from its terraform.tfvars. Deploys a Node.js code stack
-# by default, or a container image when `container` is set.
+# by default, or a container image when the `container` variable is set.
 variable "app_service" {
-  description = "App Service (Linux) configuration. Node.js code stack by default; container image when `container` is set."
+  description = "App Service (Linux) configuration. Node.js code stack by default; container image when var.container is set."
   type = object({
     app_name          = string # globally unique web app name
     service_plan_name = string # name of the App Service Plan
@@ -30,15 +30,21 @@ variable "app_service" {
     health_check_path = optional(string, "/")
     app_command_line  = optional(string, "")
     app_settings      = optional(map(string), {}) # non-secret settings only
-
-    # When set, the web app runs this container image (pulled from ACR via a
-    # system-assigned managed identity) instead of the Node.js code stack.
-    container = optional(object({
-      image_name   = string                    # repository/image name in the registry
-      image_tag    = optional(string, "latest") # image tag to run
-      registry_url = string                    # e.g. https://myacr.azurecr.io
-    }))
   })
+}
+
+# When set, the web app runs this container image (pulled from ACR via the
+# system-assigned managed identity) instead of the Node.js code stack. Passed
+# as its own variable so environments can supply a registry URL derived from a
+# registry module output. Leave null (default) for a code deployment.
+variable "container" {
+  description = "Optional container image configuration. Null for a Node.js code deployment."
+  type = object({
+    image_name   = string                     # repository/image name in the registry
+    image_tag    = optional(string, "latest") # image tag to run
+    registry_url = string                     # e.g. https://myacr.azurecr.io
+  })
+  default = null
 }
 
 # Secret app settings are passed separately (marked sensitive) and merged into

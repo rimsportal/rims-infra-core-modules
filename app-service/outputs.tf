@@ -19,6 +19,6 @@ output "service_plan_id" {
 }
 
 output "principal_id" {
-  description = "System-assigned managed identity principal ID (null unless a container deployment)."
-  value       = try(azurerm_linux_web_app.this.identity[0].principal_id, null)
+  description = "Principal ID of the web app's system-assigned managed identity."
+  value       = azurerm_linux_web_app.this.identity[0].principal_id
 }

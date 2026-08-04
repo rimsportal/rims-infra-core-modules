@@ -1,8 +1,8 @@
 locals {
   # Container deployment is selected when a container image is supplied via the
-  # app_service.container object; otherwise the module deploys the Node.js code
-  # stack, preserving the original (v0.1.0) behaviour.
-  is_container = var.app_service.container != null
+  # dedicated `container` variable; otherwise the module deploys the Node.js
+  # code stack, preserving the original (v0.1.0) behaviour.
+  is_container = var.container != null
 }
 
 resource "azurerm_service_plan" "this" {
@@ -22,14 +22,12 @@ resource "azurerm_linux_web_app" "this" {
   https_only          = var.app_service.https_only
   tags                = var.tags
 
-  # A system-assigned managed identity is created for container deployments so
-  # the web app can pull images from Azure Container Registry via an AcrPull
-  # role assignment (no registry admin credentials stored anywhere).
-  dynamic "identity" {
-    for_each = local.is_container ? [1] : []
-    content {
-      type = "SystemAssigned"
-    }
+  # A system-assigned managed identity is always created so container
+  # deployments can pull from Azure Container Registry via an AcrPull role
+  # assignment (no registry admin credentials stored anywhere). It is harmless
+  # for code (Node.js) deployments.
+  identity {
+    type = "SystemAssigned"
   }
 
   site_config {
@@ -43,9 +41,9 @@ resource "azurerm_linux_web_app" "this" {
       # Node.js (code) deployment — used when no container image is supplied.
       node_version = local.is_container ? null : var.app_service.node_version
 
-      # Container (Docker) deployment — used when app_service.container is set.
-      docker_image_name   = local.is_container ? "${var.app_service.container.image_name}:${var.app_service.container.image_tag}" : null
-      docker_registry_url = local.is_container ? var.app_service.container.registry_url : null
+      # Container (Docker) deployment — used when var.container is set.
+      docker_image_name   = local.is_container ? "${var.container.image_name}:${var.container.image_tag}" : null
+      docker_registry_url = local.is_container ? var.container.registry_url : null
     }
   }
 
