@@ -15,9 +15,10 @@ variable "tags" {
 }
 
 # Single object carrying the App Service configuration. Each environment
-# supplies this object from its terraform.tfvars.
+# supplies this object from its terraform.tfvars. Deploys a Node.js code stack
+# by default, or a container image when `container` is set.
 variable "app_service" {
-  description = "App Service (Linux, Node.js) configuration."
+  description = "App Service (Linux) configuration. Node.js code stack by default; container image when `container` is set."
   type = object({
     app_name          = string # globally unique web app name
     service_plan_name = string # name of the App Service Plan
@@ -29,6 +30,14 @@ variable "app_service" {
     health_check_path = optional(string, "/")
     app_command_line  = optional(string, "")
     app_settings      = optional(map(string), {}) # non-secret settings only
+
+    # When set, the web app runs this container image (pulled from ACR via a
+    # system-assigned managed identity) instead of the Node.js code stack.
+    container = optional(object({
+      image_name   = string                    # repository/image name in the registry
+      image_tag    = optional(string, "latest") # image tag to run
+      registry_url = string                    # e.g. https://myacr.azurecr.io
+    }))
   })
 }
 
