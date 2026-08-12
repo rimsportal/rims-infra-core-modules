@@ -39,7 +39,7 @@ variable "purge_protection_enabled" {
 variable "enable_rbac_authorization" {
   description = "Use Azure RBAC for authorization instead of access policies"
   type        = bool
-  default     = true
+  default     = false
 }
 
 variable "secrets" {
