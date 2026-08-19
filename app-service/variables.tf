@@ -64,3 +64,9 @@ variable "extra_app_settings" {
   default     = {}
   sensitive   = true
 }
+
+variable "public_network_access_enabled" {
+  description = "Should public network access be enabled for the App Service?"
+  type        = bool
+  default     = true
+}
