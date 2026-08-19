@@ -47,6 +47,15 @@ variable "container" {
   default = null
 }
 
+# Optional subnet for regional VNet integration. Must be delegated to
+# Microsoft.Web/serverFarms and dedicated to this app's plan. Null (default)
+# leaves the app without VNet integration.
+variable "integration_subnet_id" {
+  description = "Subnet ID (delegated to Microsoft.Web/serverFarms) for regional VNet integration, or null."
+  type        = string
+  default     = null
+}
+
 # Secret app settings are passed separately (marked sensitive) and merged into
 # app_settings inside the module, keeping secrets out of terraform.tfvars.
 variable "extra_app_settings" {

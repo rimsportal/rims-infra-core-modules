@@ -22,6 +22,11 @@ resource "azurerm_linux_web_app" "this" {
   https_only          = var.app_service.https_only
   tags                = var.tags
 
+  # Optional regional VNet integration. When an integration subnet (delegated to
+  # Microsoft.Web/serverFarms) is supplied, the app's outbound traffic routes
+  # into the VNet so it can reach private endpoints / injected backends.
+  virtual_network_subnet_id = var.integration_subnet_id
+
   # A system-assigned managed identity is always created so container
   # deployments can pull from Azure Container Registry via an AcrPull role
   # assignment (no registry admin credentials stored anywhere). It is harmless
@@ -36,6 +41,9 @@ resource "azurerm_linux_web_app" "this" {
     health_check_path                       = var.app_service.health_check_path
     app_command_line                        = var.app_service.app_command_line
     container_registry_use_managed_identity = local.is_container ? true : null
+
+    # Route all outbound traffic through the VNet when integration is enabled.
+    vnet_route_all_enabled = var.integration_subnet_id == null ? null : true
 
     application_stack {
       # Node.js (code) deployment — used when no container image is supplied.

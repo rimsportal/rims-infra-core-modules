@@ -3,6 +3,11 @@ output "account_name" {
   value       = azurerm_storage_account.this.name
 }
 
+output "storage_account_id" {
+  description = "Resource ID of the storage account (needed to attach a private endpoint)."
+  value       = azurerm_storage_account.this.id
+}
+
 output "primary_blob_endpoint" {
   description = "Primary blob service endpoint."
   value       = azurerm_storage_account.this.primary_blob_endpoint

@@ -25,9 +25,17 @@ variable "tags" {
 }
 
 variable "subnets" {
-  description = "Map of subnet name to CIDR"
+  description = "Map of subnet name to configuration."
   type = map(object({
     cidr = string
+    # Optional service delegation. service_name e.g. "Microsoft.Web/serverFarms".
+    delegation = optional(object({
+      service_name = string
+      actions      = optional(list(string))
+    }))
+    # Set false on subnets that host private endpoints.
+    private_endpoint_network_policies_enabled = optional(bool, true)
+    service_endpoints                         = optional(list(string), [])
   }))
 }
 

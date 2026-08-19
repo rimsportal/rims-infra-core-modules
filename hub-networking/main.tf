@@ -6,13 +6,11 @@ resource "azurerm_virtual_network" "this" {
   tags                = var.tags
 }
 
-
-
 resource "azurerm_subnet" "subnets" {
   for_each = var.subnets
 
   name                 = each.key
   resource_group_name  = var.resource_group_name
-  virtual_network_name = azurerm_virtual_network.hub.name
+  virtual_network_name = azurerm_virtual_network.this.name
   address_prefixes     = [each.value.cidr]
 }
