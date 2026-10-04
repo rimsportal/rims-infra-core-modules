@@ -43,6 +43,7 @@ resource "azurerm_linux_web_app" "this" {
     http2_enabled                           = var.app_service.http2_enabled
     minimum_tls_version                     = var.app_service.minimum_tls_version
     health_check_path                       = var.app_service.health_check_path
+    health_check_eviction_time_in_min       = var.app_service.health_check_path == null ? null : var.app_service.health_check_eviction_time_in_min
     app_command_line                        = var.app_service.app_command_line
     container_registry_use_managed_identity = local.is_container ? true : null
 

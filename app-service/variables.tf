@@ -20,18 +20,19 @@ variable "tags" {
 variable "app_service" {
   description = "App Service (Linux) configuration. Node.js code stack by default; container image when var.container is set."
   type = object({
-    app_name            = string # globally unique web app name
-    service_plan_name   = string # name of the App Service Plan
-    sku_name            = string # e.g. B1, P1v3
-    node_version        = optional(string, "20-lts")
-    always_on           = optional(bool, true)
-    https_only          = optional(bool, true)
-    ftps_state          = optional(string, "Disabled")
-    health_check_path   = optional(string, "/")
-    app_command_line    = optional(string, "")
-    http2_enabled       = optional(bool, true)
-    minimum_tls_version = optional(string, "1.2")
-    app_settings        = optional(map(string), {}) # non-secret settings only
+    app_name                          = string # globally unique web app name
+    service_plan_name                 = string # name of the App Service Plan
+    sku_name                          = string # e.g. B1, P1v3
+    node_version                      = optional(string, "20-lts")
+    always_on                         = optional(bool, true)
+    https_only                        = optional(bool, true)
+    ftps_state                        = optional(string, "Disabled")
+    health_check_path                 = optional(string, "/")
+    health_check_eviction_time_in_min = optional(number, 10)
+    app_command_line                  = optional(string, "")
+    http2_enabled                     = optional(bool, true)
+    minimum_tls_version               = optional(string, "1.2")
+    app_settings                      = optional(map(string), {}) # non-secret settings only
   })
 }
 

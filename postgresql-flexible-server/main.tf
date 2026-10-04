@@ -27,6 +27,8 @@ resource "azurerm_postgresql_flexible_server_database" "this" {
   server_id = azurerm_postgresql_flexible_server.this.id
   charset   = "UTF8"
   collation = "en_US.utf8"
+
+  depends_on = [azurerm_postgresql_flexible_server_configuration.secure_transport]
 }
 
 # Allow other Azure services (e.g. the App Service) to reach the server.
@@ -53,6 +55,8 @@ resource "azurerm_postgresql_flexible_server_configuration" "secure_transport" {
   name      = "require_secure_transport"
   server_id = azurerm_postgresql_flexible_server.this.id
   value     = "on"
+
+  depends_on = [azurerm_postgresql_flexible_server_configuration.minimum_tls]
 }
 
 resource "azurerm_postgresql_flexible_server_configuration" "minimum_tls" {
