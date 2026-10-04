@@ -15,7 +15,7 @@ output "default_hostname" {
 
 output "service_plan_id" {
   description = "Resource ID of the App Service Plan."
-  value       = var.service_plan_id == null ? azurerm_service_plan.this[0].id : var.service_plan_id
+  value       = var.create_service_plan ? azurerm_service_plan.this[0].id : var.service_plan_id
 }
 
 output "principal_id" {

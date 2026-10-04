@@ -6,7 +6,7 @@ locals {
 }
 
 resource "azurerm_service_plan" "this" {
-  count               = var.service_plan_id == null ? 1 : 0
+  count               = var.create_service_plan ? 1 : 0
   name                = var.app_service.service_plan_name
   location            = var.location
   resource_group_name = var.resource_group_name
@@ -19,7 +19,7 @@ resource "azurerm_linux_web_app" "this" {
   name                          = var.app_service.app_name
   location                      = var.location
   resource_group_name           = var.resource_group_name
-  service_plan_id               = var.service_plan_id == null ? azurerm_service_plan.this[0].id : var.service_plan_id
+  service_plan_id               = var.create_service_plan ? azurerm_service_plan.this[0].id : var.service_plan_id
   https_only                    = var.app_service.https_only
   public_network_access_enabled = var.public_network_access_enabled
   tags                          = var.tags

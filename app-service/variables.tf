@@ -41,6 +41,12 @@ variable "service_plan_id" {
   default     = null
 }
 
+variable "create_service_plan" {
+  description = "Create an App Service Plan. Set false when service_plan_id is supplied by another module instance."
+  type        = bool
+  default     = true
+}
+
 variable "auth_settings" {
   description = "Optional Microsoft Entra App Service Authentication configuration."
   type = object({
