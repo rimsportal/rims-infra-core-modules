@@ -6,6 +6,7 @@ locals {
 }
 
 resource "azurerm_service_plan" "this" {
+  count               = var.service_plan_id == null ? 1 : 0
   name                = var.app_service.service_plan_name
   location            = var.location
   resource_group_name = var.resource_group_name
@@ -18,7 +19,7 @@ resource "azurerm_linux_web_app" "this" {
   name                          = var.app_service.app_name
   location                      = var.location
   resource_group_name           = var.resource_group_name
-  service_plan_id               = azurerm_service_plan.this.id
+  service_plan_id               = var.service_plan_id == null ? azurerm_service_plan.this[0].id : var.service_plan_id
   https_only                    = var.app_service.https_only
   public_network_access_enabled = var.public_network_access_enabled
   tags                          = var.tags
@@ -39,6 +40,8 @@ resource "azurerm_linux_web_app" "this" {
   site_config {
     always_on                               = var.app_service.always_on
     ftps_state                              = var.app_service.ftps_state
+    http2_enabled                           = var.app_service.http2_enabled
+    minimum_tls_version                     = var.app_service.minimum_tls_version
     health_check_path                       = var.app_service.health_check_path
     app_command_line                        = var.app_service.app_command_line
     container_registry_use_managed_identity = local.is_container ? true : null
@@ -53,6 +56,34 @@ resource "azurerm_linux_web_app" "this" {
       # Container (Docker) deployment — used when var.container is set.
       docker_image_name   = local.is_container ? "${var.container.image_name}:${var.container.image_tag}" : null
       docker_registry_url = local.is_container ? var.container.registry_url : null
+    }
+
+    dynamic "cors" {
+      for_each = var.cors == null ? [] : [var.cors]
+      content {
+        allowed_origins     = cors.value.allowed_origins
+        support_credentials = cors.value.support_credentials
+      }
+    }
+  }
+
+  dynamic "auth_settings_v2" {
+    for_each = var.auth_settings == null ? [] : [var.auth_settings]
+    content {
+      auth_enabled           = true
+      require_authentication = true
+      unauthenticated_action = auth_settings_v2.value.unauthenticated_action
+      default_provider       = "azureactivedirectory"
+      excluded_paths         = auth_settings_v2.value.excluded_paths
+
+      active_directory_v2 {
+        client_id                  = auth_settings_v2.value.client_id
+        client_secret_setting_name = auth_settings_v2.value.client_secret_setting_name
+        tenant_auth_endpoint       = "https://login.microsoftonline.com/${auth_settings_v2.value.tenant_id}/v2.0"
+        allowed_audiences          = auth_settings_v2.value.allowed_audiences
+      }
+
+      login { token_store_enabled = true }
     }
   }
 

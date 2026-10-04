@@ -42,6 +42,12 @@ variable "enable_rbac_authorization" {
   default     = false
 }
 
+variable "public_network_access_enabled" {
+  description = "Whether the Key Vault public endpoint is enabled."
+  type        = bool
+  default     = true
+}
+
 variable "secrets" {
   description = "Map of secret names to secret values to store in Key Vault"
   type        = map(string)

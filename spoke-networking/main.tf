@@ -15,7 +15,7 @@ resource "azurerm_subnet" "subnets" {
   address_prefixes     = [each.value.cidr]
 
   # Disable for subnets that host private endpoints (default stays enabled).
-  private_endpoint_network_policies_enabled = each.value.private_endpoint_network_policies_enabled
+  private_endpoint_network_policies = each.value.private_endpoint_network_policies_enabled ? "Enabled" : "Disabled"
 
   service_endpoints = each.value.service_endpoints
 
@@ -36,6 +36,7 @@ resource "azurerm_subnet" "subnets" {
 
 # Spoke -> Hub peering.
 resource "azurerm_virtual_network_peering" "spoke_to_hub" {
+  count                        = var.hub_vnet_id == null ? 0 : 1
   name                         = "${var.vnet_name}-to-hub"
   resource_group_name          = var.resource_group_name
   virtual_network_name         = azurerm_virtual_network.spoke.name
@@ -48,6 +49,7 @@ resource "azurerm_virtual_network_peering" "spoke_to_hub" {
 
 # Hub -> Spoke peering (created on the hub side; requires access to the hub RG).
 resource "azurerm_virtual_network_peering" "hub_to_spoke" {
+  count                        = var.hub_vnet_id == null ? 0 : 1
   name                         = "hub-to-${var.vnet_name}"
   resource_group_name          = var.hub_resource_group_name
   virtual_network_name         = var.hub_vnet_name

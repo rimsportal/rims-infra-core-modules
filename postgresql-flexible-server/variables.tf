@@ -28,6 +28,11 @@ variable "postgres" {
     allow_azure_services          = optional(bool, true) # firewall rule for Azure-hosted services
     client_ip                     = optional(string, "") # optional single IP allowed through the firewall
     public_network_access_enabled = optional(bool, true)
+    backup_retention_days         = optional(number, 7)
+    geo_redundant_backup_enabled  = optional(bool, false)
+    high_availability_enabled     = optional(bool, false)
+    standby_availability_zone     = optional(string, "2")
+    require_secure_transport      = optional(bool, true)
   })
 }
 

@@ -40,16 +40,19 @@ variable "subnets" {
 }
 
 variable "hub_vnet_id" {
-  description = "Resource ID of the hub VNet — from hub remote state"
+  description = "Optional resource ID of a hub VNet. Leave null for a standalone spoke."
   type        = string
+  default     = null
 }
 
 variable "hub_vnet_name" {
-  description = "Name of the hub VNet — from hub remote state"
+  description = "Optional name of the hub VNet."
   type        = string
+  default     = null
 }
 
 variable "hub_resource_group_name" {
-  description = "Resource group of the hub VNet — needed to create hub-side peering"
+  description = "Optional resource group of the hub VNet."
   type        = string
+  default     = null
 }
